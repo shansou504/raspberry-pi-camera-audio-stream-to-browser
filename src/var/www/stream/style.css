@@ -1,0 +1,12 @@
+body {
+	background-color: #2F2F2F;
+}
+
+.flex-container {
+	display: flex;
+	margin: auto 0;
+	height: 98%;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+}

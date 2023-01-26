@@ -1,0 +1,21 @@
+<html>
+	<head>
+		<link href="node_modules/video.js/dist/video-js.min.css" rel="stylesheet">
+		<link href="style.css" rel="stylesheet">
+		<script src="node_modules/video.js/dist/video.min.js"></script>
+	</head>
+	<body>
+		<div class="flex-container">
+			<video-js id=vid1 width=600 height=400 class="vjs-default-skin" controls>
+				<source
+					src="hls/camera.m3u8"
+					type="application/x-mpegURL">
+			</video-js>
+			<script src="node_modules/@videojs/http-streaming/dist/videojs-http-streaming.min.js"></script>
+					<script>
+						var player = videojs('vid1');
+						player.play();
+					</script>
+		</div>
+	</body>
+</html>
