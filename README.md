@@ -1,17 +1,31 @@
+# Raspberry Pi Camera Module + Audio Streaming to Web Browser
+
+## Instructions
+
+Flash a microSD card with RaspiOS-Lite using [Raspberry Pi Imager](https://www.raspberrypi.com/software/)
+
+Set up a DHCP reservation on your router so you know where to find your camera.
+
+SSH into your pi or hook up a monitor and keyboard. Upon initial boot, change to autologin to console.
+
+```
 sudo raspi-config
-  autologin to console
-
+```
+```
 sudo apt update && sudo apt upgrade -y && sudo apt install \
-libcamera-apps npm nginx libnginx-mod-rtmp pulseaudio -y \
+libcamera-apps npm nginx libnginx-mod-rtmp pulseaudio git -y \
 && sudo reboot
+```
 
+After the reboot:
+```
 sudo mkdir -p /var/www/stream/hls
-
 sudo chown $USER:$USER -R /var/www/stream
-
 cd /var/www/stream/
-
 npm install video.js
+cd
+git clone 
+```
 
 vim index.html
 
