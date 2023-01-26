@@ -13,8 +13,8 @@ sudo raspi-config
 ```
 ```
 sudo apt update && sudo apt upgrade -y && sudo apt install \
-libcamera-apps npm nginx libnginx-mod-rtmp pulseaudio git -y \
-&& sudo reboot
+libcamera-apps npm nginx libnginx-mod-rtmp pulseaudio git \
+vim -y && sudo reboot
 ```
 
 After the reboot:
@@ -24,20 +24,20 @@ sudo chown $USER:$USER -R /var/www/stream
 cd /var/www/stream/
 npm install video.js
 cd
-git clone 
-```
-
-vim index.html
-
-vim style.css
-
-```
+git clone https://github.com/shansou504/raspberry-pi-camera-audio-stream-to-browser.git
+cd src
+sudo cp src/var/www/stream/* /var/www/stream/
 sudo cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak
 ```
 
+Change the user to the current user and add the rtmp block before the html block
+
+```
 sudo vim /etc/nginx/nginx.conf
-  change user to current user instead of www-data
-  add rtmp block
+```
+```
+
+```
 
 ```
 sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/stream
