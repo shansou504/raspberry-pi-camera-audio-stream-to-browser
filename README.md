@@ -44,7 +44,7 @@ sudo vim /etc/nginx/nginx.conf
 ```
 ```
 
-Add the rtmp server block (above the html block) with the hls application (below) to receive the stream.
+Add the rtmp server block (above the html block) with the hls application (below) to receive the stream. Reference the [documentation](https://github.com/arut/nginx-rtmp-module)
 
 ```
 rtmp {
@@ -92,15 +92,24 @@ Find the name of the audio device for the libcamera command. It ends in ".mono-f
 pactl list sources | grep -e Name -e Source
 ```
 
-Create the stream command to push to the nginx server.
+Copy the stream command to a directory within $PATH and replace the _--audio-device_ with the results
+from pactl.
 
 ```
+sudo cp src/usr/local/bin/stream.sh /usr/local/bin/stream.sh
 sudo vim /usr/local/bin/stream.sh
 ```
+
+Create a command at the bottom 
+
 ```
-vim ~/.profile
-  stream.sh > /dev/null 2>&1 &
+echo -e "\n\nstream.sh > /dev/null 2>&1 &" >> ~/.profile
+```
 
+Test the stream. Run the command below and point your browser to the local IP address of the pi.
+
+```
 stream.sh
+```
 
-sudo reboot
+If all goes well, reboot and make sure everything is running smoothly. There is about a 20-30 second delay.
