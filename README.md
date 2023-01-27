@@ -104,7 +104,7 @@ Copy the stream command to a directory within $PATH.
 sudo cp src/usr/local/bin/stream.sh /usr/local/bin/stream.sh
 ```
 
-Find the name of the audio device for the stream command.
+Find the name of the audio device for the stream command and copy it to your clipboard.
 Reference Raspberry Pi's [camera documentation](https://www.raspberrypi.com/documentation/computers/camera_software.html)
 
 ```
