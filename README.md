@@ -130,3 +130,7 @@ stream.sh
 ```
 
 If all goes well, reboot and make sure everything is running smoothly. 
+
+## Access the camera from anywhere
+
+Set up [pivpn](https://pivpn.io/) and open a port on your router.
