@@ -131,6 +131,6 @@ stream.sh
 
 If all goes well, reboot and make sure everything is running smoothly. 
 
-## Access the camera from anywhere
+## Allow Private Access to Your Camera from Anywhere
 
-Set up [pivpn](https://pivpn.io/) and open a port on your router.
+Set up [pivpn](https://pivpn.io/) and port forwarding on your router.
