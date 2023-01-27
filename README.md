@@ -5,7 +5,7 @@ Flash a microSD card with RaspiOS-Lite using [Raspberry Pi Imager](https://www.r
 Set up a DHCP reservation or static IP address on your router. Connect to your pi via ssh. This will
 make the setup significantly easier.
 
-Setup auto login to console through raspi-config.
+Setup auto login to console through raspi-config so the stream starts automatically.
 
 ```
 sudo raspi-config
@@ -20,7 +20,6 @@ vim -y && sudo reboot
 ```
 
 Create the directory for the web server.
-Backup the default nginx.conf
 
 ```
 sudo mkdir -p /var/www/stream/hls
