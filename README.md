@@ -19,7 +19,7 @@ libcamera-apps npm nginx libnginx-mod-rtmp pulseaudio git \
 vim -y && sudo reboot
 ```
 
-Create the directory for the web server.
+Create the directory for the web server. __Ssh back into the pi__.
 
 ```
 sudo mkdir -p /var/www/stream/hls
@@ -72,7 +72,7 @@ rtmp {
 }
 ```
 
-Create the available site in /etc/nginx/sites-available.
+Create the new stream site in /etc/nginx/sites-available.
 
 ```
 sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/stream
@@ -98,27 +98,32 @@ Adjust the microphone volume of the desired audio device.
 alsamixer
 ```
 
-Find the name of the audio device for the libcamera command. It ends in ".mono-fallback" for me.
+Copy the stream command to a directory within $PATH.
+
+```
+sudo cp src/usr/local/bin/stream.sh /usr/local/bin/stream.sh
+```
+
+Find the name of the audio device for the stream command.
+Reference Raspberry Pi's [camera documentation](https://www.raspberrypi.com/documentation/computers/camera_software.html)
 
 ```
 pactl list sources | grep -e Name -e Source
 ```
 
-Copy the stream command to a directory within $PATH and replace the _--audio-device_ with the results
-from pactl.
+Replace the _--audio-device_ with the results from pactl.
 
 ```
-sudo cp src/usr/local/bin/stream.sh /usr/local/bin/stream.sh
 sudo vim /usr/local/bin/stream.sh
 ```
 
-Add the stream command at the bottom of your .profile so runs when with auto login to console (at boot).
+Add the stream command at the bottom of your .profile so runs on login (or at boot since we set up auto login to console).
 
 ```
-echo -e "\n\nstream.sh > /dev/null 2>&1 &" >> ~/.profile
+echo -e "\nstream.sh > /dev/null 2>&1 &" >> ~/.profile
 ```
 
-To test the stream, run the command below and point your browser to the local IP address of the pi. There is about a 20-30 second delay.
+To test the stream, run the command below and point a web browser from any device on the network to the local IP address of the pi. There is about a 20-30 second delay.
 
 ```
 stream.sh
