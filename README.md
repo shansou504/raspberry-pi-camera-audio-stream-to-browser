@@ -1,10 +1,9 @@
-# Raspberry Pi Audio + Video Stream to Web Browser
-
-## Instructions
+# Raspberry Pi Audio + Video HLS Stream to Web Browser
 
 Flash a microSD card with RaspiOS-Lite using [Raspberry Pi Imager](https://www.raspberrypi.com/software/)
 
-Set up a DHCP reservation or static IP address on your router. Connect to pi via ssh.
+Set up a DHCP reservation or static IP address on your router. Connect to your pi via ssh. This will
+make the setup significantly easier.
 
 Setup auto login to console through raspi-config.
 
@@ -20,20 +19,34 @@ libcamera-apps npm nginx libnginx-mod-rtmp pulseaudio git \
 vim -y && sudo reboot
 ```
 
-Create the directory for the web server. Install [video.js](https://github.com/videojs/video.js)
-in web directory. Clone this repository for the main html page and stylesheet.
+Create the directory for the web server.
 Backup the default nginx.conf
 
 ```
 sudo mkdir -p /var/www/stream/hls
 sudo chown $USER:$USER -R /var/www/stream
+```
+
+Install [video.js](https://github.com/videojs/video.js) in your web directory. 
+
+```
 cd /var/www/stream/
 npm install video.js
+```
+
+Clone this repository and copy the html page and stylesheet into your web directory.
+
+```
 cd
 git clone https://github.com/shansou504/raspberry-pi-camera-audio-stream-to-browser.git
-cd src
-sudo cp src/var/www/stream/* /var/www/stream/
-sudo cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak
+cd raspberry-pi-camera-audio-stream-to-browser
+cp src/var/www/stream/* /var/www/stream/
+```
+
+Make a backup of the default nginx.conf
+
+```
+cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak
 ```
 
 Update the nginx.conf to include the rtmp application server.
@@ -42,9 +55,9 @@ Change the _user_ from _www-data_ to the current user.
 ```
 sudo vim /etc/nginx/nginx.conf
 ```
-```
 
-Add the rtmp server block (above the html block) with the hls application (below) to receive the stream. Reference the [documentation](https://github.com/arut/nginx-rtmp-module)
+Add the rtmp server block with the hls application (above the html block).
+Reference the [nginx-rtmp-module](https://github.com/arut/nginx-rtmp-module) documentation.
 
 ```
 rtmp {
@@ -60,19 +73,19 @@ rtmp {
 }
 ```
 
-Create the available site in nginx.
+Create the available site in /etc/nginx/sites-available.
 
 ```
 sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/stream
 ```
 
-Change the location to stream instead of html
+Change the web root from _/var/www/html_ to _/var/www/stream_
 
 ```
 sudo vim /etc/nginx/sites-available/stream
 ```
 
-Create a link to enable the site and disable the default site.
+Create a symbolic link to enable the _stream_ site and then disable the _default_ site.
 
 ```
 sudo ln -s /etc/nginx/sites-available/stream /etc/nginx/sites-enabled/stream
@@ -100,16 +113,16 @@ sudo cp src/usr/local/bin/stream.sh /usr/local/bin/stream.sh
 sudo vim /usr/local/bin/stream.sh
 ```
 
-Create a command at the bottom 
+Add the stream command at the bottom of your .profile so runs when with auto login to console (at boot).
 
 ```
 echo -e "\n\nstream.sh > /dev/null 2>&1 &" >> ~/.profile
 ```
 
-Test the stream. Run the command below and point your browser to the local IP address of the pi.
+To test the stream, run the command below and point your browser to the local IP address of the pi. There is about a 20-30 second delay.
 
 ```
 stream.sh
 ```
 
-If all goes well, reboot and make sure everything is running smoothly. There is about a 20-30 second delay.
+If all goes well, reboot and make sure everything is running smoothly. 
