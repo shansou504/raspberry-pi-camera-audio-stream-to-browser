@@ -1,23 +1,29 @@
-# Raspberry Pi Camera Module + Audio Streaming to Web Browser
+# Raspberry Pi Audio + Video Stream to Web Browser
 
 ## Instructions
 
 Flash a microSD card with RaspiOS-Lite using [Raspberry Pi Imager](https://www.raspberrypi.com/software/)
 
-Set up a DHCP reservation on your router so you know where to find your camera.
+Set up a DHCP reservation or static IP address on your router. Connect to pi via ssh.
 
-SSH into your pi or hook up a monitor and keyboard. Upon initial boot, change to autologin to console.
+Setup auto login to console through raspi-config.
 
 ```
 sudo raspi-config
 ```
+
+Update the system, install the required applications, and reboot.
+
 ```
 sudo apt update && sudo apt upgrade -y && sudo apt install \
 libcamera-apps npm nginx libnginx-mod-rtmp pulseaudio git \
 vim -y && sudo reboot
 ```
 
-After the reboot:
+Create the directory for the web server. Install [video.js](https://github.com/videojs/video.js)
+in web directory. Clone this repository for the main html page and stylesheet.
+Backup the default nginx.conf
+
 ```
 sudo mkdir -p /var/www/stream/hls
 sudo chown $USER:$USER -R /var/www/stream
@@ -30,12 +36,15 @@ sudo cp src/var/www/stream/* /var/www/stream/
 sudo cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak
 ```
 
-Change the user to the current user and add the rtmp block before the html block
+Update the nginx.conf to include the rtmp application server.
+Change the _user_ from _www-data_ to the current user.
 
 ```
 sudo vim /etc/nginx/nginx.conf
 ```
 ```
+
+Add the rtmp server block (above the html block) with the hls application (below) to receive the stream.
 
 ```
 
