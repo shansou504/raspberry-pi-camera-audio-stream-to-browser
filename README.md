@@ -47,13 +47,32 @@ sudo vim /etc/nginx/nginx.conf
 Add the rtmp server block (above the html block) with the hls application (below) to receive the stream.
 
 ```
+rtmp {
+	server {
+		listen 1935;
+
+		application hls {
+			live on;
+			hls on;
+			hls_path /var/www/stream/hls;
+		}
+	}
+}
+```
+
+Create the available site in nginx.
 
 ```
 sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/stream
 ```
 
+Change the location to stream instead of html
+
+```
 sudo vim /etc/nginx/sites-available/stream
-  change root to /var/www/stream instead of /var/www/html
+```
+
+Create a link to enable the site and disable the default site.
 
 ```
 sudo ln -s /etc/nginx/sites-available/stream /etc/nginx/sites-enabled/stream
@@ -61,19 +80,24 @@ sudo rm /etc/nginx/sites-enabled/default
 sudo systemctl reload nginx
 ```
 
+Adjust the microphone volume of the desired audio device.
+
 ```
 alsamixer
 ```
-  set desired microphone volume on desired soundcard
+
+Find the name of the audio device for the libcamera command. It ends in ".mono-fallback" for me.
 
 ```
 pactl list sources | grep -e Name -e Source
 ```
 
-use desired source for "--audio-device" option in stream.sh
+Create the stream command to push to the nginx server.
 
+```
 sudo vim /usr/local/bin/stream.sh
-
+```
+```
 vim ~/.profile
   stream.sh > /dev/null 2>&1 &
 
