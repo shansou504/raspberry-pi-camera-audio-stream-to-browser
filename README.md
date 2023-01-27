@@ -102,6 +102,7 @@ Copy the stream command to a directory within $PATH.
 
 ```
 sudo cp src/usr/local/bin/stream.sh /usr/local/bin/stream.sh
+sudo chmod a+x /usr/local/bin/stream.sh
 ```
 
 Find the name of the audio device for the stream command and copy it to your clipboard.
