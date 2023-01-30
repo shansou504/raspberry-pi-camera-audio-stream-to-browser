@@ -45,7 +45,7 @@ cp src/var/www/stream/* /var/www/stream/
 Make a backup of the default nginx.conf
 
 ```
-cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak
+sudo cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak
 ```
 
 Update the nginx.conf to include the rtmp application server.
