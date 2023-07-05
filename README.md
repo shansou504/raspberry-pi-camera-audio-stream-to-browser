@@ -1,6 +1,6 @@
 # Raspberry Pi 3/4 Camera Module and USB Microphone HLS Stream to Web Browser
 
-Flash a microSD card with RaspiOS-Lite using [Raspberry Pi Imager](https://www.raspberrypi.com/software/)
+Flash a microSD card with RaspiOS-Lite 64-bit using [Raspberry Pi Imager](https://www.raspberrypi.com/software/)
 
 Set up a DHCP reservation or static IP address on your router. Connect to your pi via ssh. This will
 make the setup significantly easier.
