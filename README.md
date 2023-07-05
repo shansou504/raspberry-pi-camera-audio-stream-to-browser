@@ -78,7 +78,7 @@ Create the new stream site in /etc/nginx/sites-available.
 sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/stream
 ```
 
-Change the web root from _/var/www/html_ to _/var/www/stream_
+__Change the web root from _/var/www/html_ to _/var/www/stream___
 
 ```
 sudo vim /etc/nginx/sites-available/stream
