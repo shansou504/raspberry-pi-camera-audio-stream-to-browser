@@ -19,7 +19,7 @@ libcamera-apps npm nginx libnginx-mod-rtmp pulseaudio git \
 vim -y && sudo reboot
 ```
 
-Create the directory for the web server. __Ssh back into the pi__.
+SSH back into the pi and create the directory for the web server.
 
 ```
 sudo mkdir -p /var/www/stream/hls
