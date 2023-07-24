@@ -2,66 +2,118 @@
 
 Flash a microSD card with RaspiOS-Lite 64-bit using [Raspberry Pi Imager](https://www.raspberrypi.com/software/)
 
-Set up a DHCP reservation or static IP address on your router. Connect to your pi via ssh. This will
-make the setup significantly easier.
-
-Setup auto login to console through raspi-config so the stream starts automatically.
+Ssh into your pi once it's up and running on your network. Update the system, install the required applications, set a static IP address and reboot.
 
 ```
-sudo raspi-config
+sudo su
+apt update
+apt upgrade -y
+apt install -y libcamera-apps npm nginx libnginx-mod-rtmp git vim
 ```
 
-Update the system, install the required applications, and reboot.
+Set a static IP address, following the example provided in ___/etc/dhcpcd.conf___, for your local network.
 
 ```
-sudo apt update && sudo apt upgrade -y && sudo apt install \
-libcamera-apps npm nginx libnginx-mod-rtmp pulseaudio git \
-vim -y && sudo reboot
+vim /etc/dhcpcd.conf
 ```
 
-SSH back into the pi and create the directory for the web server.
+Reboot
 
 ```
-sudo mkdir -p /var/www/stream/hls
-sudo chown $USER:$USER -R /var/www/stream
+reboot
+```
+
+Ssh back into the pi and set a default alsa input.
+
+```
+sudo su
+arecord -l
+```
+
+Use the output of the above command to set the __<NAME>__ in the ___/etc/asound.conf___ file that will need to be created.
+
+```
+vim /etc/asound.conf
+```
+
+```
+pcm.!default {
+  type hw
+  card "<NAME>"
+}
+
+ctl.!default {
+  type hw
+  card "<NAME>"
+}
+```
+If you are using a stand-alone microphone you may need to use the ___aplay -l___ to find the name of a desired audio output and adjust the file to this format. Which output you pick does not matter unless you plan to use the speaker to play music or white noise.
+
+```
+pcm.!default {
+  type asym
+  playback.pcm "hw:<NAME-OF-OUTPUT>"
+  capture.pcm "hw:<NAME-OF-INPUT>"
+}
+
+ctl.!default {
+  type hw
+  card "<NAME-OF-OUTPUT>"
+}
+```
+
+Adjust the microphone volume of the desired audio device.
+
+```
+alsamixer
+```
+
+Create the directory for the web server
+
+```
+mkdir -p /var/www/stream/hls
+cd /var/www/stream/
 ```
 
 Install [video.js](https://github.com/videojs/video.js) in your web directory. 
 
 ```
-cd /var/www/stream/
 npm install video.js
 ```
 
 Clone this repository and copy the html page and stylesheet into your web directory.
 
 ```
-cd
+cd /opt/
 git clone https://github.com/shansou504/raspberry-pi-camera-audio-stream-to-browser.git
 cd raspberry-pi-camera-audio-stream-to-browser
 cp src/var/www/stream/* /var/www/stream/
 ```
 
-Make a backup of the default nginx.conf
+Make a backup of the default ___/etc/nginx/nginx.conf___
 
 ```
-sudo cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak
+cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak
 ```
 
 Update the nginx.conf to include the rtmp application server.
-Change the _user_ from _www-data_ to the current user.
 
 ```
-sudo vim /etc/nginx/nginx.conf
+vim /etc/nginx/nginx.conf
 ```
 
-Add the rtmp server block with the hls application (above the html block).
+Add the rtmp server block with the src and hls applications.
 Reference the [nginx-rtmp-module](https://github.com/arut/nginx-rtmp-module) documentation.
 
 ```
 rtmp {
 	server {
 		listen 1935;
+
+		application src {
+			live on;
+			exec_static /usr/bin/libcamera-vid --timeout 0 --inline --nopreview --awbgains 1,1 --codec libav --libav-audio --audio-source alsa --audio-channels 1 --libav-format flv --output rtmp://localhost:1935/hls/stream;
+		}
 
 		application hls {
 			live on;
@@ -72,66 +124,47 @@ rtmp {
 }
 ```
 
-Create the new stream site in /etc/nginx/sites-available.
+Create the new stream site in ___/etc/nginx/sites-available___.
 
 ```
-sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/stream
+cp /etc/nginx/sites-available/default /etc/nginx/sites-available/stream
 ```
 
-__Change the web root from _/var/www/html_ to _/var/www/stream___
+Change the web root from ___/var/www/html___ to ___/var/www/stream___
 
 ```
-sudo vim /etc/nginx/sites-available/stream
+vim /etc/nginx/sites-available/stream
 ```
 
 Create a symbolic link to enable the _stream_ site and then disable the _default_ site.
 
 ```
-sudo ln -s /etc/nginx/sites-available/stream /etc/nginx/sites-enabled/stream
-sudo rm /etc/nginx/sites-enabled/default
-sudo systemctl reload nginx
+ln -s /etc/nginx/sites-available/stream /etc/nginx/sites-enabled/stream
+rm /etc/nginx/sites-enabled/default
 ```
 
-Adjust the microphone volume of the desired audio device.
+Change ownership and add the ___www-data___ user to the ___audio___ and ___video___ groups so the webapp can use the microphone and camera.
 
 ```
-alsamixer
+chown www-data:www-data -R /var/www/stream
+adduser www-data audio
+adduser www-data video
 ```
 
-Copy the stream command to a directory within $PATH.
+Enable and restart nginx.
 
 ```
-sudo cp src/usr/local/bin/stream.sh /usr/local/bin/stream.sh
-sudo chmod a+x /usr/local/bin/stream.sh
+systemctl enable nginx
+systemctl restart nginx
 ```
 
-Find the name of the audio device for the stream command and copy it to your clipboard.
-Reference Raspberry Pi's [camera documentation](https://www.raspberrypi.com/documentation/computers/camera_software.html)
+Point a web browser from any device on the network to the local IP address of the pi. There is about a 20-30 second delay.
 
 ```
-pactl list sources | grep -e Name -e Source
+reboot
 ```
 
-Replace the _--audio-device_ with the results from pactl.
-
-```
-sudo vim /usr/local/bin/stream.sh
-```
-
-Add the stream command at the bottom of your .profile so runs on login (or at boot since we set up auto login to console).
-
-```
-echo -e "\nstream.sh > /dev/null 2>&1 &" >> ~/.profile
-```
-
-To test the stream, run the command below and point a web browser from any device on the network to the local IP address of the pi. There is about a 20-30 second delay.
-
-```
-stream.sh
-```
-
-If all goes well, reboot and make sure everything is running smoothly. 
-
+Confirm everything is still working.
 ## Allow Private Access to Your Camera from Anywhere
 
-Set up [pivpn](https://pivpn.io/) and port forwarding on your router.
+Set up a WireGuard VPN and port forwarding on your router.
