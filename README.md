@@ -81,7 +81,7 @@ Install [video.js](https://github.com/videojs/video.js) in your web directory.
 npm install video.js
 ```
 
-Clone this repository and copy the html page and stylesheet into your web directory.
+Clone this repository and copy its contents into your web directory.
 
 ```
 cd /opt/
