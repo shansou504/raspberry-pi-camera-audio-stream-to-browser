@@ -6,6 +6,8 @@ Ssh into your pi once it's up and running on your network. Update the system, in
 
 ```
 sudo su
+```
+```
 apt update
 apt upgrade -y
 apt install -y libcamera-apps npm nginx libnginx-mod-rtmp git vim
@@ -27,6 +29,8 @@ Ssh back into the pi and set a default alsa input.
 
 ```
 sudo su
+```
+```
 arecord -l
 ```
 
